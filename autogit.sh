@@ -1,6 +1,6 @@
 git add -A
-git commit -m "next step -> Priority Queue: Sorted From High to Low"
+git commit -m "next theme -> Implementing Queues in Python"
 git push
 git status
 
-# link: https://realpython.com/queue-in-python/#priority-queue-sorted-from-high-to-low
+# link: https://realpython.com/queue-in-python/#implementing-queues-in-python
