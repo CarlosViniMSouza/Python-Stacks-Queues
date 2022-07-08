@@ -47,3 +47,17 @@ You could use the priority queue to **sort a sequence** of elements by a given k
 **Note**: Even though the priority queue is conceptually a sequence, its most efficient implementation builds on top of the [heap data structure](https://realpython.com/python-heapq-module/), which is a kind of [binary tree](https://en.wikipedia.org/wiki/Binary_tree). Therefore, the terms heap and priority queue are sometimes used interchangeably.
 
 </br>
+
+## **Implementing Queues in Python**
+
+First of all, should you implement a queue yourself in Python? In most cases, the answer to that question will be a decisive no. The language comes with batteries included, and queues are no exception. In fact, you’ll discover that Python has an abundance of queue implementations suited to solving various problems.
+
+That being said, trying to build something from scratch can be an invaluable learning experience. You might also get asked to provide a queue implementation during a [technical interview](https://realpython.com/python-coding-interview-tips/). So, if you find this topic interesting, then please read on. Otherwise, if you only seek to [use queues in practice](https://realpython.com/queue-in-python/#using-queues-in-practice), then feel free to skip this section entirely.
+
+<br>
+
+### Representing FIFO and LIFO Queues With a Deque
+
+To represent a FIFO queue in the computer’s memory, you’ll need a [sequence](https://docs.python.org/3/glossary.html#term-sequence) that has O(1), or constant time, performance for the enqueue operation on one end, and a similarly efficient dequeue operation on the other end. As you already know by now, a deque or double-ended queue satisfies those requirements. Plus, it’s universal enough to adapt for a LIFO queue as well.
+
+However, because coding one would be out of scope of this tutorial, you’re going to leverage Python’s [deque collection](https://realpython.com/python-deque/) from the standard library.
