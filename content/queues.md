@@ -61,3 +61,49 @@ That being said, trying to build something from scratch can be an invaluable lea
 To represent a FIFO queue in the computer’s memory, you’ll need a [sequence](https://docs.python.org/3/glossary.html#term-sequence) that has O(1), or constant time, performance for the enqueue operation on one end, and a similarly efficient dequeue operation on the other end. As you already know by now, a deque or double-ended queue satisfies those requirements. Plus, it’s universal enough to adapt for a LIFO queue as well.
 
 However, because coding one would be out of scope of this tutorial, you’re going to leverage Python’s [deque collection](https://realpython.com/python-deque/) from the standard library.
+
+<br>
+
+### Building a Queue Data Type
+
+**Note**: You’ll have a closer look at the built-in queue module in a later section devoted to thread-safe queues in Python.
+
+</br>
+
+Because you want your custom FIFO queue to support at least the enqueue and dequeue operations, go ahead and write a bare-bones Queue class that’ll delegate those two operations to `deque.append()` and `deque.popleft()` methods, respectively:
+
+`see the code in path: python/deque.py`
+
+As expected, the enqueued elements come back to you in their original order. If you want, you may improve your class by making it [iterable](https://docs.python.org/3/glossary.html#term-iterable) and able to report its length and optionally accept initial elements:
+
+```python
+# deque.py
+
+from collections import deque
+
+
+class Queue:
+    def __init__(self, *elements) -> None:
+        self._elements = deque(elements)
+
+    def __len__(self):
+        return len(self._elements)
+
+    def __iter__(self):
+        while len(self) > 0:
+            yield self.dequeue()
+
+    def enqueue(self, element):
+        self._elements.append(element)
+
+    def dequeue(self):
+        return self._elements.popleft()
+```
+
+A deque takes an optional iterable, which you can provide through a varying number of positional arguments, *elements, in your initializer method. By implementing the special `.__iter__()` method, you’ll make your class instances usable in a [for loop](https://realpython.com/python-for-loop/), while implementing `.__len__()` will make them compatible with the len() function. The `.__iter__()` method above is an example of a [generator iterator](https://docs.python.org/3/glossary.html#term-generator-iterator), which [yields](https://realpython.com/introduction-to-python-generators/) elements [lazily](https://en.wikipedia.org/wiki/Lazy_evaluation).
+
+<br>
+
+**Note**: The implementation of `.__iter__()` causes your custom queue to reduce its size by dequeuing elements from itself as you iterate over it.
+
+</br>
