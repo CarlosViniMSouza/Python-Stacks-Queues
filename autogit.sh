@@ -1,6 +1,6 @@
 git add -A
-git commit -m "Next Theme -> Representing Priority Queues With a Heap"
+git commit -m "Next Theme -> Building a Priority Queue Data Type"
 git push
 git status
 
-# link: https://realpython.com/queue-in-python/#representing-priority-queues-with-a-heap
+# link: https://realpython.com/queue-in-python/#building-a-priority-queue-data-type

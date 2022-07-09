@@ -18,7 +18,8 @@ Adding an element to the FIFO queue is commonly referred to as an **enqueue** op
 
 **Note**: You can think of elements in a FIFO queue as cars stopping at a traffic light.
 
-</br>
+<br>
+
 
 Another point worth noting about the queue depicted above is that it can grow without bounds as new elements arrive. Picture a checkout line stretching to the back of the store during a busy shopping season! In some situations, however, you might prefer to work with a **bounded queue** that has a fixed capacity known upfront.
 
@@ -28,7 +29,7 @@ The second strategy for dealing with incoming elements in a bounded FIFO queue l
 
 **Note**: For a brief comparison of other cache eviction strategies, head over to Caching in Python Using the LRU Cache Strategy.
 
-</br>
+<br>
 
 ## **Priority Queue**
 
@@ -38,7 +39,7 @@ A **priority queue** is different from those you’ve seen so far because it can
 
 **Note**: Make sure to choose a data type for your priorities whose values are comparable through the comparison operators, such as less than (<). For example, integers and timestamps would be fine, while complex numbers wouldn’t work for indicating priority because they don’t implement any relevant comparison operator.
 
-</br>
+<br>
 
 You could use the priority queue to **sort a sequence** of elements by a given key or get the **top few elements**. However, that would be overkill because there are far more efficient [sorting algorithms](https://realpython.com/sorting-algorithms-python/) available. The priority queue is better suited for situations when elements can come and go dynamically. One such situation would be searching for the **shortest path** in a weighted graph using [Dijkstra’s algorithm](https://realpython.com/queue-in-python/#dijkstras-algorithm-using-a-priority-queue), which you’ll read about later.
 
@@ -46,11 +47,11 @@ You could use the priority queue to **sort a sequence** of elements by a given k
 
 **Note**: Even though the priority queue is conceptually a sequence, its most efficient implementation builds on top of the [heap data structure](https://realpython.com/python-heapq-module/), which is a kind of [binary tree](https://en.wikipedia.org/wiki/Binary_tree). Therefore, the terms heap and priority queue are sometimes used interchangeably.
 
-</br>
+<br>
 
 ## **Implementing Queues in Python**
 
-First of all, should you implement a queue yourself in Python? In most cases, the answer to that question will be a decisive no. The language comes with batteries included, and queues are no exception. In fact, you’ll discover that Python has an abundance of queue implementations suited to solving various problems.
+Firstly, should you implement a queue yourself in Python? In most cases, the answer to that question will be a decisive no. The language comes with batteries included, and queues are no exception. In fact, you’ll discover that Python has an abundance of queue implementations suited to solving various problems.
 
 That being said, trying to build something from scratch can be an invaluable learning experience. You might also get asked to provide a queue implementation during a [technical interview](https://realpython.com/python-coding-interview-tips/). So, if you find this topic interesting, then please read on. Otherwise, if you only seek to [use queues in practice](https://realpython.com/queue-in-python/#using-queues-in-practice), then feel free to skip this section entirely.
 
@@ -68,7 +69,7 @@ However, because coding one would be out of scope of this tutorial, you’re goi
 
 **Note**: You’ll have a closer look at the built-in queue module in a later section devoted to thread-safe queues in Python.
 
-</br>
+<br>
 
 Because you want your custom FIFO queue to support at least the enqueue and dequeue operations, go ahead and write a bare-bones Queue class that’ll delegate those two operations to `deque.append()` and `deque.popleft()` methods, respectively:
 
@@ -106,4 +107,45 @@ A deque takes an optional iterable, which you can provide through a varying numb
 
 **Note**: The implementation of `.__iter__()` causes your custom queue to reduce its size by dequeuing elements from itself as you iterate over it.
 
-</br>
+<br>
+
+## **Representing Priority Queues With a Heap**
+
+The last queue that you’ll implement in this tutorial will be a priority queue. Unlike a stack, the priority queue can’t extend the `Queue` class defined earlier, because it doesn’t belong to the same type hierarchy. The order of elements in a FIFO or LIFO queue is determined solely by the elements’ time of arrival. In a priority queue, it’s an element’s priority and the insertion order that together determine the ultimate position within the queue.
+
+There are many ways to implement a priority queue, such as:
+
+&nbsp; &nbsp; ° An **unordered list** of elements and their priorities, which you search through every time before dequeuing the element with the highest priority
+
+&nbsp; &nbsp; ° An **ordered list** of elements and their priorities, which you sort every time you enqueue a new element
+
+&nbsp; &nbsp; ° An **ordered list** of elements and their priorities, which you keep sorted by finding the right spot for a new element using [binary search](https://realpython.com/binary-search-python/)
+
+&nbsp; &nbsp; ° A **binary tree** that maintains the heap [invariant](https://en.wikipedia.org/wiki/Invariant_(mathematics)#Invariants_in_computer_science) after the enqueue and dequeue operations
+
+Looking up an element in an unordered list has `O(n) time complexity`. Sorting the entire queue would be even more expensive, especially when exercised often. Python’s `list.sort()` method employs an algorithm called [Timsort](https://en.wikipedia.org/wiki/Timsort), which has `O(n log(n))` worst-case time complexity. Inserting an element with [`bisect.insort()`](https://realpython.com/binary-search-python/#using-the-bisect-module) is slightly better because it can take advantage of an already sorted list, but the gain is offset by the slow insertion that follows.
+
+Fortunately, you can be smart about keeping the elements sorted in a priority queue by using a **heap data structure** under the hood.
+
+<br>
+
+| Implementation                | Enqueue     | Dequeue   |
+|-------------------------------|-------------|-----------|
+| Find Max on Dequeue	          | O(1)        | O(n)      |
+| Sort on Enqueue	              | O(n log(n)) | O(1)      |
+| Bisect and Insert on Enqueue  | O(n)        | O(1)      |
+| Push onto a Heap on Enqueue		 | O(log(n))   | O(log(n)) |
+
+<br>
+
+The heap has the best overall performance for large data volumes. Although using the [bisection method](https://en.wikipedia.org/wiki/Bisection_method) to find the right spot for a new element is O(log(n)), the actual insertion of that element is O(n), making it less desirable than a heap.
+
+Python has the `heapq` module, which conveniently provides a few functions that can turn a regular list into a heap and manipulate it efficiently. The two functions that’ll help you build a priority queue are:
+
+&nbsp; &nbsp; 1 - `heapq.heappush()`
+
+&nbsp; &nbsp; 2 - `heapq.heappop()`
+
+When you push a new element onto a non-empty heap, it’ll end up in the right spot, maintaining the heap invariant.
+
+`see the file in python/heap.py`
