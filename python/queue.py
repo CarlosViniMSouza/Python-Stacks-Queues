@@ -3,9 +3,11 @@ This class merely wraps a collections.deque instance and calls it ._elements.
 The leading underscore in the attribute's name indicates an internal bit of implementation,
 which only the class should access and modify.
 
-Such fields are sometimes called private because they're not supposed to be visible outside the class body.
+Such fields are sometimes called private because they're not supposed to be visible 
+outside the class body.
 """
 
+from itertools import count
 from collections import deque
 from heapq import heappop, heappush
 
@@ -36,12 +38,14 @@ class Stack(Queue):
 class PriorityQueue:
     def __init__(self) -> None:
         self._elements = []
+        self._counter = count()
 
     def pushElementPriority(self, priority, value):
-        heappush(self._elements, (priority, value))
+        element = (priority, next(self._counter), value)
+        return heappush(self._elements, element)
 
     def popElementPriority(self):
-        return heappop(self._elements)
+        return heappop(self._elements)[-1]
 
 
 messages = PriorityQueue()

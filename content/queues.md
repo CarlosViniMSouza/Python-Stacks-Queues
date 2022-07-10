@@ -192,3 +192,28 @@ print(messages.popElementPriority())
 ```
 
 You defined three priority levels: critical, important, and neutral. Next, you instantiated a priority queue and used it to enqueue a few messages with those priorities. However, instead of dequeuing the message with the highest priority, you got a tuple corresponding to the message with the *lowest* priority.
+
+The most straightforward way of representing the arrival time in a priority queue is perhaps a [monotonically increasing](https://en.wikipedia.org/wiki/Monotonic_function) counter. In other words, you want to count the number of enqueue operations performed without considering the potential dequeue operations that might be taking place. Then, you’ll store the current value of the counter in every enqueued element to reflect the state of your queue at that instant.
+
+You can use the `.count()` iterator from the[itertools](https://realpython.com/python-itertools/) module to count from zero to infinity in a concise way:
+
+```python
+from itertools import count
+from heapq import heappop, heappush
+
+class PriorityQueue:
+    def __init__(self) -> None:
+        self._elements = []
+        self._counter = count()
+
+    def pushElementPriority(self, priority, value):
+        element = (priority, next(self._counter), value)
+        return heappush(self._elements, element)
+
+    def popElementPriority(self):
+        return heappop(self._elements)[-1]
+```
+
+The counter gets initialized when you create a new `PriorityQueue` instance. Whenever you enqueue a value, the counter increments and retains its current state in a tuple pushed onto the heap. So, if you enqueue another value with the same priority later, then the earlier one will take precedence because you enqueued it with a smaller counter.
+
+Your priority queue is almost ready, but it’s missing the two special methods, `.__len__()` and `.__iter__()`, which you implemented in the other two queue classes. While you can’t reuse their code through inheritance, as the priority queue is not a subtype of the FIFO queue, Python provides a powerful mechanism that lets you work around that issue.
