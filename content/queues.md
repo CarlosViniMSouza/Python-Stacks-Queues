@@ -149,3 +149,46 @@ Python has the `heapq` module, which conveniently provides a few functions that 
 When you push a new element onto a non-empty heap, it’ll end up in the right spot, maintaining the heap invariant.
 
 `see the file in python/heap.py`
+
+<br>
+
+## **Building a Priority Queue Data Type**
+
+Imagine you were building software for an automotive company. Modern vehicles are practically computers on wheels, which leverage a [controller area network (CAN)](https://en.wikipedia.org/wiki/CAN_bus) bus to broadcast messages about various events going on in your car, such as unlocking the doors or inflating an airbag. Clearly, some of those events are more important than others and should be prioritized accordingly.
+
+It’s okay to miss a faulty headlight message or wait a little longer for the audio volume level to go down. However, when you press the brake pedal, you expect it to have an immediate effect because it’s a safety-critical subsystem. Each message has a priority in the CAN bus protocol, which tells the intermediate units whether they should relay the message further or disregard it completely.
+
+```python
+class PriorityQueue:
+    def __init__(self) -> None:
+        self._elements = []
+
+    def pushElementPriority(self, priority, value):
+        heappush(self._elements, (priority, value))
+
+    def popElementPriority(self):
+        return heappop(self._elements)
+```
+
+It’s a basic priority queue implementation, which defines a heap of elements using a Python list and two methods that manipulate it. The `.pushElementsPriority()` method takes two arguments, a priority and a corresponding value, which it then wraps in a tuple and pushes onto the heap using the heapq module. Notice that the priority comes before the value to take advantage of how Python compares tuples.
+
+```python
+messages = PriorityQueue()
+
+NEUTRAL = 1
+IMPORTANT = 2
+CRITICAL = 3
+
+messages.pushElementPriority(IMPORTANT, "Windshield wipers turned on")
+messages.pushElementPriority(NEUTRAL, "Radio station turned in")
+messages.pushElementPriority(CRITICAL, "Brake pedal depressed")
+messages.pushElementPriority(IMPORTANT, "Hazard lights turned on")
+
+print(messages.popElementPriority())
+# output: (1, 'Radio station turned in')
+
+print(messages.popElementPriority())
+# output: (2, 'Hazard lighhts turned on')
+```
+
+You defined three priority levels: critical, important, and neutral. Next, you instantiated a priority queue and used it to enqueue a few messages with those priorities. However, instead of dequeuing the message with the highest priority, you got a tuple corresponding to the message with the *lowest* priority.

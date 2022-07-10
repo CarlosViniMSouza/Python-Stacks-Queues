@@ -7,6 +7,7 @@ Such fields are sometimes called private because they're not supposed to be visi
 """
 
 from collections import deque
+from heapq import heappop, heappush
 
 
 class Queue:
@@ -30,3 +31,32 @@ class Queue:
 class Stack(Queue):
     def popElement(self):
         return self._elements.pop()
+
+
+class PriorityQueue:
+    def __init__(self) -> None:
+        self._elements = []
+
+    def pushElementPriority(self, priority, value):
+        heappush(self._elements, (priority, value))
+
+    def popElementPriority(self):
+        return heappop(self._elements)
+
+
+messages = PriorityQueue()
+
+NEUTRAL = 1
+IMPORTANT = 2
+CRITICAL = 3
+
+messages.pushElementPriority(IMPORTANT, "Windshield wipers turned on")
+messages.pushElementPriority(NEUTRAL, "Radio station turned in")
+messages.pushElementPriority(CRITICAL, "Brake pedal depressed")
+messages.pushElementPriority(IMPORTANT, "Hazard lights turned on")
+
+print(messages.popElementPriority())
+# output: (1, 'Radio station turned in')
+
+print(messages.popElementPriority())
+# output: (2, 'Hazard lighhts turned on')
