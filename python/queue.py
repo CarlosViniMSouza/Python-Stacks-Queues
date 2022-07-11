@@ -12,41 +12,59 @@ from dataclasses import dataclass
 from itertools import count
 
 
-class Queue:
-    def __init__(self, *elements) -> None:
-        self._elements = deque(elements)
-
-    def __len__(self) -> int:
-        return len(self._elements)
+class IterableMixin:
+    def __len__(self):
+        return len(self._element)
 
     def __iter__(self):
-        if len(self._elements) > 0:
+        while len(self) > 0:
+            yield self.popElement()
+
+
+class Queue(IterableMixin):
+    def __init__(self, *element) -> None:
+        self._element = deque(element)
+
+    def __len__(self) -> int:
+        return len(self._element)
+
+    def __iter__(self):
+        if len(self._element) > 0:
             yield self.popElement()
 
     def addElement(self, data):
-        self._elements.append(data)
+        self._element.append(data)
 
     def popElement(self):
-        self._elements.popleft()
+        self._element.popleft()
 
 
 class Stack(Queue):
     def popElement(self):
-        return self._elements.pop()
+        return self._element.pop()
 
 
-class PriorityQueue:
+class PriorityQueue(IterableMixin):
     def __init__(self) -> None:
-        self._elements = []
+        self._element = []
         self._counter = count()
 
     def pushElementPriority(self, priority, value):
         element = (-priority, next(self._counter), value)
-        heappush(self._elements, element)
+        heappush(self._element, element)
 
     def popElementPriority(self):
-        return heappop(self._elements)[-1]
+        return heappop(self._element)[-1]
 
+
+@dataclass
+class Message:
+    event: str
+
+
+wipers = Message("Windshield wipers turned on")
+hazard = Message("Hazard lights turned on")
+test = Message("This message it´s not Important")
 
 messages = PriorityQueue()
 
@@ -64,13 +82,3 @@ print(messages.popElementPriority())
 
 print(messages.popElementPriority())
 # output: (2, 'Hazard lighhts turned on')
-
-
-@dataclass
-class Message:
-    event: str
-
-
-wipers = Message("Windshield wipers turned on")
-hazard = Message("Hazard lights turned on")
-test = Message("This message it´s not Important")

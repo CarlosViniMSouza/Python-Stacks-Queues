@@ -242,3 +242,27 @@ class PriorityQueue:
 The counter gets initialized when you create a new `PriorityQueue` instance. Whenever you enqueue a value, the counter increments and retains its current state in a tuple pushed onto the *heap*. So, if you enqueue another value with the same priority later, then the earlier one will take precedence because you enqueued it with a smaller counter.
 
 Your priority queue is almost ready, but it’s missing the two special methods, `.__len__()` and `.__iter__()`, which you implemented in the other two queue classes. While you can’t reuse their code through inheritance, as the priority queue *is not* a subtype of the FIFO queue, Python provides a powerful mechanism that lets you work around that issue.
+
+## **Refactoring the Code Using a Mixin Class**
+
+To reuse code across unrelated classes, you can identify their least common denominator and then extract that code into a [mixin class](https://realpython.com/inheritance-composition-python/#mixing-features-with-mixin-classes). A mixin class is like a spice. It can’t stand on its own, so you wouldn’t typically instantiate it, but it can add that extra flavor once you mix it into another class. Here’s how it would work in practice:
+
+```python
+class IterableMixin:
+    def __len__(self):
+        return len(self._elements)
+
+    def __iter__(self):
+        while len(self) > 0:
+            yield self.dequeue()
+
+class Queue(IterableMixin):
+    # ...
+
+class PriorityQueue(IterableMixin):
+    # ...
+```
+
+You moved the `.__len__()` and `.__iter__()` methods from the `Queue` class to a separate `IterableMixin` class and made the former extend that mixin. You also made the `PriorityQueue` inherit from the same mixin class. How is this different from the standard inheritance?
+
+Notice that your mixin class refers to an `._elements` attribute, which you haven’t defined yet! It’s provided by the concrete classes, such as `Queue` and `PriorityQueue`, that you throw into the mix much later.

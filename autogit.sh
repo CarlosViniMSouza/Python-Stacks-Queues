@@ -1,6 +1,6 @@
 git add -A
-git commit -m "Next Theme -> Refactoring the Code Using a Mixin Class"
+git commit -m "Next Theme -> Using Queues in Practice"
 git push
 git status
 
-# link:https://realpython.com/queue-in-python/#refactoring-the-code-using-a-mixin-class
+# link: https://realpython.com/queue-in-python/#using-queues-in-practice
