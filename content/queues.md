@@ -49,7 +49,7 @@ You could use the priority queue to **sort a sequence** of elements by a given k
 
 <br>
 
-## **Implementing Queues in Python**
+# Implementing Queues in Python
 
 Firstly, should you implement a queue yourself in Python? In most cases, the answer to that question will be a decisive no. The language comes with batteries included, and queues are no exception. In fact, you’ll discover that Python has an abundance of queue implementations suited to solving various problems.
 
@@ -266,3 +266,17 @@ class PriorityQueue(IterableMixin):
 You moved the `.__len__()` and `.__iter__()` methods from the `Queue` class to a separate `IterableMixin` class and made the former extend that mixin. You also made the `PriorityQueue` inherit from the same mixin class. How is this different from the standard inheritance?
 
 Notice that your mixin class refers to an `._elements` attribute, which you haven’t defined yet! It’s provided by the concrete classes, such as `Queue` and `PriorityQueue`, that you throw into the mix much later.
+
+# Using Queues in Practice
+
+In this section, you’re going to use the queues that you just built to implement classic [graph traversal algorithms](https://en.wikipedia.org/wiki/Graph_traversal). There are numerous ways to represent graphs in code and an equal number of Python libraries that already do that well. For the sake of simplicity, you’ll take advantage of the [networkx](https://networkx.org/) and [pygraphviz](https://pygraphviz.github.io/) libraries, as well as the widely used [DOT](https://en.wikipedia.org/wiki/DOT_(graph_description_language)) graph description language.
+
+You can install those libraries into your [virtual environment](https://realpython.com/python-virtual-environments-a-primer/) using pip:
+
+```shell
+(venv) $ python -m pip install networkx pygraphviz
+```
+
+```shell
+OBS.: Problems to install graphviz in Windows 11 (i dont know how to fix! 😒)
+```
