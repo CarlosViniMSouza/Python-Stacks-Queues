@@ -192,3 +192,53 @@ print(messages.popElementPriority())
 ```
 
 You defined three priority levels: critical, important, and neutral. Next, you instantiated a priority queue and used it to enqueue a few messages with those priorities. However, instead of dequeuing the message with the highest priority, you got a tuple corresponding to the message with the *lowest* priority.
+
+## **Handling Corner Cases in Your Priority Queue**
+
+Your queue can correctly order elements by priority, but at the same time, it violates **sort stability** when comparing elements with equal priorities. This means that in the example above, flashing the hazard lights takes precedence over engaging the windshield wipers, even though this ordering doesn’t follow the chronology of events.
+
+To be clear, this is a direct consequence of tuple comparison in Python, which moves to the next component in a tuple if the earlier ones didn’t resolve the comparison. Strings follow the [lexicographic order](https://en.wikipedia.org/wiki/Lexicographic_order), in which the word *Hazard* comes before the word *Windshield*, hence the inconsistent order.
+
+There’s another problem related to that, which would completely break the **tuple comparison** in rare cases. Specifically, it’d fail if you tried to enqueue an element that doesn’t support any [comparison operators](https://realpython.com/python-operators-expressions/#comparison-operators), such as an instance of a custom class, and the queue already contained at least one element with the same priority that you wanted to use. Consider the following [data class](https://realpython.com/python-data-classes/) to represent messages in your queue:
+
+```python
+from dataclasses import dataclass
+
+
+@dataclass
+class Message:
+    event: str
+
+
+wipers = Message("Windshield wipers turned on")
+hazard = Message("Hazard lights turned on")
+test = Message("This message it´s not Important")
+```
+
+`Message` objects might be more convenient to work with than plain strings, but unlike strings, they aren’t comparable unless you tell Python how to perform the [comparison](https://realpython.com/python-data-classes/#comparing-cards). As you can see, custom class instances don’t provide the implementation for the less than (<) operator by default.
+
+You can solve both problems — that is, the sort instability and the broken tuple comparison — by introducing another component to the elements stored on the heap. This extra component should be comparable and represent the **time of arrival**. When placed between the element’s priority and value in a tuple, it’ll resolve the order if two elements have the same priority, regardless of their values.
+
+You can use the `count()` iterator from the [itertools](https://realpython.com/python-itertools/) module to count from zero to infinity in a concise way:
+
+```python
+from heapq import heappop, heappush
+from itertools import count
+
+
+class PriorityQueue:
+    def __init__(self) -> None:
+        self._elements = []
+        self._counter = count()
+
+    def pushElementPriority(self, priority, value):
+        element = (-priority, next(self._counter), value)
+        heappush(self._elements, element)
+
+    def popElementPriority(self):
+        return heappop(self._elements)[-1]
+```
+
+The counter gets initialized when you create a new `PriorityQueue` instance. Whenever you enqueue a value, the counter increments and retains its current state in a tuple pushed onto the *heap*. So, if you enqueue another value with the same priority later, then the earlier one will take precedence because you enqueued it with a smaller counter.
+
+Your priority queue is almost ready, but it’s missing the two special methods, `.__len__()` and `.__iter__()`, which you implemented in the other two queue classes. While you can’t reuse their code through inheritance, as the priority queue *is not* a subtype of the FIFO queue, Python provides a powerful mechanism that lets you work around that issue.

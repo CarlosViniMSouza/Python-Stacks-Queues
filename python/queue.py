@@ -8,6 +8,8 @@ Such fields are sometimes called private because they're not supposed to be visi
 
 from collections import deque
 from heapq import heappop, heappush
+from dataclasses import dataclass
+from itertools import count
 
 
 class Queue:
@@ -36,12 +38,14 @@ class Stack(Queue):
 class PriorityQueue:
     def __init__(self) -> None:
         self._elements = []
+        self._counter = count()
 
     def pushElementPriority(self, priority, value):
-        heappush(self._elements, (priority, value))
+        element = (-priority, next(self._counter), value)
+        heappush(self._elements, element)
 
     def popElementPriority(self):
-        return heappop(self._elements)
+        return heappop(self._elements)[-1]
 
 
 messages = PriorityQueue()
@@ -60,3 +64,13 @@ print(messages.popElementPriority())
 
 print(messages.popElementPriority())
 # output: (2, 'Hazard lighhts turned on')
+
+
+@dataclass
+class Message:
+    event: str
+
+
+wipers = Message("Windshield wipers turned on")
+hazard = Message("Hazard lights turned on")
+test = Message("This message it´s not Important")
