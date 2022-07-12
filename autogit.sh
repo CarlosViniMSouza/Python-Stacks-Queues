@@ -1,6 +1,6 @@
 git add -A
-git commit -m "Next Theme -> Object Representation of the Cities and Roads | Problems because pygraphviz not installed"
+git commit -m "Next Theme -> Working with Thread-Safe Queues"
 git push
 git status
 
-# link: https://realpython.com/queue-in-python/#object-representation-of-the-cities-and-roads
+# link: https://realpython.com/queue-in-python/#using-thread-safe-queues

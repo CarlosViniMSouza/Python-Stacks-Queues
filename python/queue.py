@@ -57,6 +57,10 @@ class PriorityQueue(IterableMixin):
         return heappop(self._element)[-1]
 
 
+class LifoQueue:
+    pass
+
+
 @dataclass
 class Message:
     event: str
