@@ -55,4 +55,7 @@ Table of Contents
 
 Queues are the backbone of numerous algorithms found in games, artificial intelligence, satellite navigation, and task scheduling. They’re among the top **abstract data types** that computer science students learn early in their education. At the same time, software engineers often leverage higher-level **message queues** to achieve better scalability of a [microservice architecture](https://realpython.com/python-microservices-grpc/). Plus, using queues in Python is simply fun!
 
-Python provides a few **built-in flavors of queues** that you’ll see in action in this tutorial. You’re also going to get a quick primer on the **theory of queues** and their types. Finally, you’ll take a look at some **external libraries** for connecting to popular message brokers available on major cloud platform providers.
+Python provides a few **built-in flavors of queues** that you’ll see in action in this tutorial. You’re also going to get a quick primer on the **theory of queues** and their types. Finally, you’ll take a look at some **external libraries** for connecting to popular *message brokers* available on major cloud platform providers.
+
+`Testing in Tab P11 Plus + NeoVim in Termux`
+

@@ -1,5 +1,5 @@
 git add -A
-git commit -m "Next Theme -> Refactoring the Code Using a Mixin Class"
+git commit -m "Configuring Git and GitHub on NeoVim"
 git push
 git status
 
