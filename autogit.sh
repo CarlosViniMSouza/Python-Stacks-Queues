@@ -1,5 +1,5 @@
 git add -A
-git commit -m "Conflicts fixed"
+git commit -m "Next Step: View Class (implement)"
 git push
 git status
 

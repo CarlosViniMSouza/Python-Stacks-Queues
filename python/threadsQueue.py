@@ -1,7 +1,42 @@
 # (venv) $ python -m pip install rich
 
-import argparse
+import threading
+import argparsei
+from random import randint
+from time import sleep
 from queue import PriorityQueue, Queue, LifoQueue
+
+
+class Worker(threading.Thread):
+    def __init__(self, speed, buffer):
+        self.speed = speed
+        self.buffer = buffer
+        self.product = None
+        self.working = False
+        self.progress = 0
+
+    @property
+    def stateWork(self):
+        if self.working:
+            return f"{self.product} ({self.progress}%)"
+        return ":zzz: IDLE"
+
+    def simulateIDLE(self):
+        self.product = None
+        self.working = False
+        self.progress  0
+
+        sleep(randint(1, 3))
+
+    def simulateWork(self):
+        self.working = True
+        self.progress = 0
+        delay = randint(1, 1 + 10 // self.speed)
+
+        for _ in range(100):
+            sleep(delay/100)
+            self.progress += 1
+
 
 queueTypes = {
     "FIFO": Queue,

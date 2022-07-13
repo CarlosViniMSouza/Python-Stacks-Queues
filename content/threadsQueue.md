@@ -13,3 +13,11 @@ The script uses the Rich library, which you’ll need to install into your virtu
 ```shell
 (venv) $ python -m pip install rich
 ```
+
+`see the file in python/threadingQueue.py`
+
+```python
+# threadingQueue
+
+```
+
