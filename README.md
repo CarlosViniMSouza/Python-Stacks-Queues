@@ -57,5 +57,11 @@ Queues are the backbone of numerous algorithms found in games, artificial intell
 
 Python provides a few **built-in flavors of queues** that you’ll see in action in this tutorial. You’re also going to get a quick primer on the **theory of queues** and their types. Finally, you’ll take a look at some **external libraries** for connecting to popular *message brokers* available on major cloud platform providers.
 
-`Testing in Tab P11 Plus + NeoVim in Termux`
+```
+_____                    ____                  _
+|  _ \    ___  __   __  / ___|   __ _   _ __  | |   ___    ___
+| | | |  / _ \ \ \ / / | |      / _` | | '__| | |  / _ \  / __|
+| |_| | |  __/  \ V /  | |___  | (_| | | |    | | | (_) | \__ \
+|____/   \___|   \_/    \____|  \__,_| |_|    |_|  \___/  |___/
+```
 
