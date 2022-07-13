@@ -1,5 +1,5 @@
 git add -A
-git commit -m "Salve my intro termux | Next Step: View Class (implement)"
+git commit -m "Salve my NeoVim Configuration | Next Step: View Class (implement)"
 git push
 git status
 
