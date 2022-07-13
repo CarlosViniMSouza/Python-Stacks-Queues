@@ -13,3 +13,11 @@ The script uses the Rich library, which you’ll need to install into your virtu
 ```shell
 (venv) $ python -m pip install rich
 ```
+
+`see the file in: python/threadingQueue.py`
+
+Notice the use of [structural pattern matching](https://realpython.com/python310-new-features/#structural-pattern-matching) to set the title and products based on the queue type. You’ll create an instance of the view and call its `.animate()` method once the producers and consumers are in place.
+
+Next up, you’ll define the producer and consumer classes, and connect the pieces together.
+
+## queue.Queue
