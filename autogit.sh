@@ -1,5 +1,5 @@
 git add -A
-git commit -m "Next Theme -> Working with Thread-Safe Queues"
+git commit -m "Conflicts fixed"
 git push
 git status
 

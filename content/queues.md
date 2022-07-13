@@ -193,6 +193,7 @@ print(messages.popElementPriority())
 
 You defined three priority levels: critical, important, and neutral. Next, you instantiated a priority queue and used it to enqueue a few messages with those priorities. However, instead of dequeuing the message with the highest priority, you got a tuple corresponding to the message with the *lowest* priority.
 
+<<<<<<< HEAD
 ## **Handling Corner Cases in Your Priority Queue**
 
 Your queue can correctly order elements by priority, but at the same time, it violates **sort stability** when comparing elements with equal priorities. This means that in the example above, flashing the hazard lights takes precedence over engaging the windshield wipers, even though this ordering doesn’t follow the chronology of events.
@@ -225,7 +226,6 @@ You can use the `count()` iterator from the [itertools](https://realpython.com/p
 from heapq import heappop, heappush
 from itertools import count
 
-
 class PriorityQueue:
     def __init__(self) -> None:
         self._elements = []
@@ -234,6 +234,8 @@ class PriorityQueue:
     def pushElementPriority(self, priority, value):
         element = (-priority, next(self._counter), value)
         heappush(self._elements, element)
+        element = (priority, next(self._counter), value)
+        return heappush(self._elements, element)
 
     def popElementPriority(self):
         return heappop(self._elements)[-1]
@@ -280,3 +282,8 @@ You can install those libraries into your [virtual environment](https://realpyth
 ```shell
 OBS.: Problems to install graphviz in Windows 11 (i dont know how to fix! 😒)
 ```
+=======
+The counter gets initialized when you create a new `PriorityQueue` instance. Whenever you enqueue a value, the counter increments and retains its current state in a tuple pushed onto the heap. So, if you enqueue another value with the same priority later, then the earlier one will take precedence because you enqueued it with a smaller counter.
+
+Your priority queue is almost ready, but it’s missing the two special methods, `.__len__()` and `.__iter__()`, which you implemented in the other two queue classes. While you can’t reuse their code through inheritance, as the priority queue is not a subtype of the FIFO queue, Python provides a powerful mechanism that lets you work around that issue.
+>>>>>>> 5c3cc4de4ae84dc26ae31ace8fe9560453443bee
