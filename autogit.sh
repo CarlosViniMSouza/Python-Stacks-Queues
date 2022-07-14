@@ -1,6 +1,6 @@
 git add -A
-git commit -m "Problems with threadingQueue.py | Objective: GIF Thread-Safe FIFO Queue"
+git commit -m "Next Theme: queue.PriorityQueue"
 git push
 git status
 
-# link: https://realpython.com/queue-in-python/#queuequeue
+# link: https://realpython.com/queue-in-python/#queuepriorityqueue
