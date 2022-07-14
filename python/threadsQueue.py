@@ -1,10 +1,14 @@
 # before: (venv) $ python -m pip install rich
 
 import argparse
+from pydoc import importfile
 import threading
 from time import sleep
-from random import randint, choice
+from enum import IntEnum
 from itertools import zip_longest
+from random import randint, choice
+from dataclasses import dataclass, field
+from regex import P
 
 from rich.align import Align
 from rich.columns import Columns
@@ -152,6 +156,21 @@ class Consumer(Worker):
     """
 
 
+@dataclass(order=True)
+class Product:
+    priority: int
+    label: str = field(compare=False)
+
+    def __str__(self):
+        return self.label
+
+
+class Priority(IntEnum):
+    LOW = 3
+    MEDIUM = 2
+    HIGH = 1
+
+
 queueTypes = {
     "FIFO": Queue,
     "LIFO": LifoQueue,
@@ -176,14 +195,21 @@ PRODUCTS = (
     ":yo-yo:",
 )
 
+prioriPRODUCTS = (
+    Product(Priority.HIGH, ":1st_place_medal:"),
+    Product(Priority.MEDIUM, ":2nd_place_medal:"),
+    Product(Priority.LOW, ":3rd_place_medal:"),
+)
+
 
 def main(args):
     buffer = queueTypes[args.queue]()
+    products = prioriPRODUCTS if args.queue == "heap" else PRODUCTS
     producers = [
         Producer(
             args.producer_speed,
             buffer,
-            PRODUCTS
+            products
         )
         for _ in range(args.producers)
     ]

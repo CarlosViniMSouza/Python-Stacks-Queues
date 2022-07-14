@@ -1,6 +1,6 @@
 git add -A
-git commit -m "Next Theme: queue.PriorityQueue"
+git commit -m "Next Theme: Using Asynchronous Queues"
 git push
 git status
 
-# link: https://realpython.com/queue-in-python/#queuepriorityqueue
+# link: https://realpython.com/queue-in-python/#using-asynchronous-queues

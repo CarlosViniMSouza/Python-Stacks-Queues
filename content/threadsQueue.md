@@ -23,3 +23,7 @@ Next up, you’ll define the producer and consumer classes, and connect the piec
 ```markdown
 **Note:** To avoid a deadlock, you can optionally set a timeout on the `.get()` method by passing a timeout keyword argument with the number of seconds to wait before giving up.
 ```
+
+Remember that a heap data structure is a binary tree, which keeps a specific relationship between its elements. Therefore, even though the products in the priority queue don’t appear to be arranged quite correctly, they’re actually consumed in the right order.
+
+Python threads are well-suited to [I/O-bound](https://en.wikipedia.org/wiki/I/O_bound) tasks, which spend most of their time waiting for data on the network, the file system, or a database. However, there’s recently been a single-threaded alternative to synchronized queues, taking advantage of [Python’s asynchronous features](https://realpython.com/python-async-features/). That’s what you’ll look at now.
