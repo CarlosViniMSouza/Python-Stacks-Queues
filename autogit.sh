@@ -1,5 +1,5 @@
 git add -A
-git commit -m "Next Theme: queue.Queue"
+git commit -m "Problems with threadingQueue.py | Objective: GIF Thread-Safe FIFO Queue"
 git push
 git status
 

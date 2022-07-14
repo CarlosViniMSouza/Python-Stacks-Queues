@@ -1,19 +1,18 @@
-# (venv) $ python -m pip install rich
+# before: (venv) $ python -m pip install rich
 
 import argparse
 import threading
-import argparsei
 from time import sleep
-from random import randint
+from random import randint, choice
 from itertools import zip_longest
+
+from queue import PriorityQueue, Queue, LifoQueue
 
 from rich.align import Align
 from rich.columns import Columns
 from rich.console import Group
 from rich.live import Live
 from rich.panel import Panel
-
-from queue import PriorityQueue, Queue, LifoQueue
 
 
 class Worker(threading.Thread):
@@ -55,7 +54,9 @@ class View:
 
     def animate(self):
         with Live(
-            self.render(), screen=True, refresh_per_second=5
+            self.render(),
+            screen=True,
+            refresh_per_second=5
         ) as live:
             while True:
                 live.update(self.render())
@@ -64,7 +65,10 @@ class View:
         match self.buffer:
             case PriorityQueue():
                 title = "Priority Queue Class"
-                products = map(str, reversed(list(self.buffer.queue)))
+                products = map(
+                    str,
+                    reversed(list(self.buffer.queue))
+                )
 
             case LifoQueue():
                 title = "Stack Class"
@@ -78,16 +82,26 @@ class View:
                 title = "not defined"
                 products = "not defined"
 
-        rows = [Panel(f"[bold]{title}:[/] {', '.join(products)}",
-                  width=80)]
+        rows = [
+            Panel(
+                f"[bold]{title}:[/] {', '.join(products)}",
+                width=80
+            )]
 
-        pairs = zip_longest(self.producers, self.consumers)
+        pairs = zip_longest(
+            self.producers,
+            self.consumers
+        )
 
         for i, (producer, consumer) in enumerate(pairs, 1):
-            left_panel = self.panel(producer, f"Producer {i}")
-            right_panel = self.panel(consumer, f"Consumer {i}")
-
-            rows.append(Columns([left_panel, right_panel], width=40))
+            leftPanel = self.panel(producer, f"Producer {i}")
+            rightPanel = self.panel(consumer, f"Consumer {i}")
+            rows.append(Columns(
+                [
+                    leftPanel,
+                    rightPanel
+                ],
+                width=40))
 
         return Group(*rows)
 
@@ -105,14 +119,61 @@ class View:
         return Panel(align, height=5, title=title)
 
 
-queueTypes = {
-    "FIFO": Queue,
-    "LIFO": LifoQueue,
-    "HEAP": PriorityQueue
-}
+class Producer(Worker):
+    def __init__(self, speed, buffer, products) -> None:
+        super().__init__(speed, buffer)
+        self.products = products
+
+    def runSimulate(self):
+        while True:
+            self.product = choice(self.products)
+            self.simulateWork()
+            self.buffer.put(self.product)
+            self.simulateIDLE()
+
+    """
+    The .runSimulate() method is where all the magic happens!
+    """
+
+
+class Consumer(Worker):
+    def runSimulate(self):
+        self.product = self.buffer.get()
+        self.simulateWork()
+        self.buffer.taskDone()
+        self.simulateIDLE()
+
+    """
+    It also works in an infinite loop, waiting for a product to appear in the queue.
+    """
+
 
 def main(args):
     buffer = queueTypes[args.queue]()
+    producers = [
+        Producer(
+            args.prod_speed,
+            buffer,
+            PRODUCTS
+        ) for _ in range(args.producers)
+    ]
+
+    consumers = [
+        Consumer(
+            args.prod_speed,
+            buffer
+        ) for _ in range(args.consumers)
+    ]
+
+    for producer in producers:
+        producer.start()
+
+    for consumer in consumer:
+        consumer.start()
+
+    view = View(buffer, producers, consumers)
+    view.animate()
+
 
 def parseARGS():
     parser = argparse.ArgumentParser()
@@ -124,6 +185,14 @@ def parseARGS():
     parser.add_argument("-cs", "--cons-speed", type=int, default=1)
 
     return parser.parse_args()
+
+
+queueTypes = {
+    "FIFO": Queue,
+    "LIFO": LifoQueue,
+    "HEAP": PriorityQueue
+}
+
 
 PRODUCTS = (
     ":balloon:",
