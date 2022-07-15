@@ -282,8 +282,51 @@ You can install those libraries into your [virtual environment](https://realpyth
 ```shell
 OBS.: Problems to install graphviz in Windows 11 (i dont know how to fix! 😒)
 ```
-=======
+
 The counter gets initialized when you create a new `PriorityQueue` instance. Whenever you enqueue a value, the counter increments and retains its current state in a tuple pushed onto the heap. So, if you enqueue another value with the same priority later, then the earlier one will take precedence because you enqueued it with a smaller counter.
 
 Your priority queue is almost ready, but it’s missing the two special methods, `.__len__()` and `.__iter__()`, which you implemented in the other two queue classes. While you can’t reuse their code through inheritance, as the priority queue is not a subtype of the FIFO queue, Python provides a powerful mechanism that lets you work around that issue.
->>>>>>> 5c3cc4de4ae84dc26ae31ace8fe9560453443bee
+
+## **Using Asynchronous Queues**
+
+If you’d like to use queues in an asynchronous context, then Python has you covered. The [asyncio module](https://realpython.com/async-io-python/) provides asynchronous counterparts to queues from the `threading module`, which you can use in [coroutine functions](https://docs.python.org/3/glossary.html#term-coroutine-function) on a single thread. Because both queue families share a similar interface, switching from one to the other should be relatively painless.
+
+In this section, you’ll write a rudimentary [web crawler](https://en.wikipedia.org/wiki/Web_crawler), which recursively follows links on a specified website up to a given depth level and counts the number of visits per link. To fetch data asynchronously, you’ll use the popular [aiohttp library](https://pypi.org/project/aiohttp/), and to parse HTML hyperlinks, you’ll rely on [beautifulsoup4](https://pypi.org/project/beautifulsoup4/).
+
+<br>
+
+**Note**: You can use Beautiful Soup and Python to [build a web scraper](https://realpython.com/beautiful-soup-web-scraper-python/), which collects valuable data while visiting web pages.
+
+<br>
+
+To lay the groundwork for your web crawler, you’ll make a few building blocks first. Create a new file named `asyncQueue.py` and define the following structure in it:
+
+```python
+import argparse
+import asyncio
+from collections import Counter
+
+import aiohttp
+
+async def main(args):
+    session = aiohttp.ClientSession()
+    try:
+        links = Counter()
+        display(links)
+    finally:
+        await session.close()
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("url")
+    parser.add_argument("-d", "--max-depth", type=int, default=2)
+    parser.add_argument("-w", "--num-workers", type=int, default=3)
+    return parser.parse_args()
+
+def display(links):
+    for url, count in links.most_common():
+        print(f"{count:>3} {url}")
+
+if __name__ == "__main__":
+    asyncio.run(main(parse_args()))
+```

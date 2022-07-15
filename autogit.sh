@@ -1,5 +1,5 @@
 git add -A
-git commit -m "Next Theme: Using Asynchronous Queues"
+git commit -m "Next Theme: Using Asynchronous Queues (continue second part of code)"
 git push
 git status
 
