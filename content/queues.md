@@ -466,3 +466,42 @@ if __name__ == "__main__":
 <br>
 
 Your worker increments the number of hits when visiting a URL. Additionally, if the current URL’s depth doesn’t exceed the maximum allowed depth, then the worker fetches the HTML content that the URL points to and iterates over its links.
+
+## **asyncio.Queue (continuos Asynchronous Queues)**
+
+In this section, you’ll update your `main()` coroutine by creating the queue and the asynchronous tasks that run your workers. Each worker will receive a unique identifier to differentiate it in the log messages, an `aiohttp` session, the queue instance, the counter of visits to a particular link, and the maximum depth. Because you’re using a single thread, you don’t need to ensure [mutually exclusive](https://en.wikipedia.org/wiki/Mutual_exclusion) access to shared resources.
+
+```python
+# function main() -> (from asyncQueue.py)
+
+async def main(args):
+    session = aiohttp.ClientSession()
+
+    try:
+        links = Counter()
+        queue = asyncio.Queue()
+        tasks = [
+            asyncio.create_task(
+                worker(
+                    f"Worker - {i + 1}",
+                    session,
+                    queue,
+                    links,
+                    args.maxDepth,
+                )
+            )
+            for i in range(args.numWorkers)
+        ]
+
+        await queue.put(Job(args.url))
+        await queue.join()
+
+        for task in tasks:
+            task.cancel()
+
+        await asyncio.gather(*tasks, return_exceptions=True)
+
+        display(links)
+    finally:
+        await session.close()
+```

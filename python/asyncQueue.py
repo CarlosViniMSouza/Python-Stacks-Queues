@@ -18,6 +18,28 @@ async def main(args):
 
     try:
         links = Counter()
+        queue = asyncio.Queue()
+        tasks = [
+            asyncio.create_task(
+                worker(
+                    f"Worker - {i + 1}",
+                    session,
+                    queue,
+                    links,
+                    args.maxDepth,
+                )
+            )
+            for i in range(args.numWorkers)
+        ]
+
+        await queue.put(Job(args.url))
+        await queue.join()
+
+        for task in tasks:
+            task.cancel()
+
+        await asyncio.gather(*tasks, return_exceptions=True)
+
         display(links)
     finally:
         await session.close()

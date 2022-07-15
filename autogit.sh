@@ -1,6 +1,6 @@
 git add -A
-git commit -m "Next Theme: asyncio.Queue"
+git commit -m "Next Theme: asyncio.LifoQueue"
 git push
 git status
 
-# link: https://realpython.com/queue-in-python/#asyncioqueue
+# link: https://realpython.com/queue-in-python/#asynciolifoqueue
