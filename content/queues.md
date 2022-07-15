@@ -383,3 +383,86 @@ if __name__ == "__main__":
 ```
 
 You’ll only return the received content as long as it’s HTML, which you can tell by looking at the `Content-Type` [HTTP header](https://en.wikipedia.org/wiki/List_of_HTTP_header_fields). When extracting links from the HTML content, you’ll skip inline [JavaScript](https://realpython.com/python-vs-javascript/) in the `href` attribute, and optionally join a relative path with the current URL.
+
+```python
+import sys
+import argparse
+import asyncio
+import aiohttp
+from typing import NamedTuple
+from bs4 import BeautifulSoup
+from collections import Counter
+from urllib.parse import urljoin
+
+
+class Job(NamedTuple):
+    url: str
+    depth: int = 1
+
+
+async def main(args):
+    session = aiohttp.ClientSession()
+
+    try:
+        links = Counter()
+        display(links)
+    finally:
+        await session.close()
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("URL")
+    parser.add_argument("-d", "--max-depth", type=int, default=2)
+    parser.add_argument("-w", "--num-workers", type=int, default=3)
+
+    return parser.parse_args()
+
+def display(links):
+    for URL, count in links.most_common():
+        print(f"{count :> 3} {URL}")
+
+async def fetchHTML(session, url):
+    async with session.get(url) as response:
+        if response.ok and response.content_type == "text/html":
+            return await response.text()
+
+def parse_links(url, html):
+    soup = BeautifulSoup(html, features="html.parser")
+    for anchor in soup.select("a[href]"):
+        href = anchor.get("href").lower()
+
+        if not href.startswith("javascript:"):
+            yield urljoin(url, href)
+
+async def worker(workerID, session, queue, links, maxDepth):
+    print(f"[{workerID} starting]", file=sys.stderr)
+
+    while True:
+        url, depth = await queue.get()
+        links[url] += 1
+        try:
+            if depth <= maxDepth:
+                print(f"[{workerID} {depth =} {url =}]",
+                      file=sys.stderr)
+
+                if html := await fetchHTML(session, html):
+                    for linkURL in parse_links(url, html):
+                        await queue.put(Job(linkURL, depth+1))
+        except aiohttp.ClientError:
+            print(f"[{workerID} failed at {url =}]",
+                  file=sys.stderr)
+        finally:
+            queue.task_done()
+
+
+if __name__ == "__main__":
+    asyncio.run(main(parse_args()))
+```
+
+<br>
+
+**Note:** You can use the [print()](https://realpython.com/python-print/) function in asynchronous code — for example, to [log diagnostic messages](https://en.wikipedia.org/wiki/Logging_(software)) — because everything runs on a single thread. On the other hand, you’d have to replace it with the [logging](https://realpython.com/python-logging/) module in a multithreaded code because the `print()` function isn’t thread-safe.
+
+<br>
+
+Your worker increments the number of hits when visiting a URL. Additionally, if the current URL’s depth doesn’t exceed the maximum allowed depth, then the worker fetches the HTML content that the URL points to and iterates over its links.
