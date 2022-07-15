@@ -467,7 +467,7 @@ if __name__ == "__main__":
 
 Your worker increments the number of hits when visiting a URL. Additionally, if the current URL’s depth doesn’t exceed the maximum allowed depth, then the worker fetches the HTML content that the URL points to and iterates over its links.
 
-## **asyncio.Queue (continuos Asynchronous Queues)**
+## asyncio.Queue
 
 In this section, you’ll update your `main()` coroutine by creating the queue and the asynchronous tasks that run your workers. Each worker will receive a unique identifier to differentiate it in the log messages, an `aiohttp` session, the queue instance, the counter of visits to a particular link, and the maximum depth. Because you’re using a single thread, you don’t need to ensure [mutually exclusive](https://en.wikipedia.org/wiki/Mutual_exclusion) access to shared resources.
 
@@ -505,3 +505,42 @@ async def main(args):
     finally:
         await session.close()
 ```
+
+## asyncio.LifoQueue
+
+As with the synchronized queues, their asynchronous companions let you change the behavior of your workers without modifying their code. Go back to your `async_queues` module and replace the existing FIFO queue with a LIFO one:
+
+```python
+async def main(args):
+    session = aiohttp.ClientSession()
+
+    try:
+        links = Counter()
+        queue = asyncio.LifoQueue()  # Alteration here!!
+        tasks = [
+            asyncio.create_task(
+                worker(
+                    f"Worker - {i + 1}",
+                    session,
+                    queue,
+                    links,
+                    args.maxDepth,
+                )
+            )
+            for i in range(args.numWorkers)
+        ]
+
+        await queue.put(Job(args.url))
+        await queue.join()
+
+        for task in tasks:
+            task.cancel()
+
+        await asyncio.gather(*tasks, return_exceptions=True)
+
+        display(links)
+    finally:
+        await session.close()
+```
+
+**Note:** If you kept track of the already visited links and skipped them on the subsequent encounters, then it could lead to different outputs depending on the queue type used. That’s because many alternative paths might originate on different depth levels but lead up to the same destination.
