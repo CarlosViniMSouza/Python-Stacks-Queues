@@ -544,3 +544,21 @@ async def main(args):
 ```
 
 **Note:** If you kept track of the already visited links and skipped them on the subsequent encounters, then it could lead to different outputs depending on the queue type used. That’s because many alternative paths might originate on different depth levels but lead up to the same destination.
+
+## asyncio.PriorityQueue
+
+To use your jobs in a priority queue, you must specify how to compare them when deciding on their priorities. For example, you may want to visit shorter URLs first. Go ahead and add the `.__lt__()` special method to your Job class, to which the less than `(<)` operator delegates when comparing two job instances:
+
+```python
+class Job(NamedTuple):
+    url: str
+    depth: int = 1
+
+    def __lt__(self, other):
+        if isinstance(other, Job):
+            return len(self.url) < len(other.url)
+```
+
+You’ll immediately notice that links are generally explored in the order determined by the URL lengths. Naturally, the exact order will vary slightly with each run because of the non-deterministic nature of the time it takes for the server to reply.
+
+Asynchronous queues are a fairly new addition to the Python standard library. They deliberately mimic an interface of the corresponding thread-safe queues, which should make any seasoned Pythonista feel at home. You can use asynchronous queues to exchange data between coroutines.

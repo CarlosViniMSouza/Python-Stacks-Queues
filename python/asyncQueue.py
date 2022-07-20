@@ -12,13 +12,17 @@ class Job(NamedTuple):
     url: str
     depth: int = 1
 
+    def __lt__(self, other):
+        if isinstance(other, Job):
+            return len(self.url) < len(other.url)
+
 
 async def main(args):
     session = aiohttp.ClientSession()
 
     try:
         links = Counter()
-        queue = asyncio.LifoQueue()
+        queue = asyncio.PriorityQueue()
         tasks = [
             asyncio.create_task(
                 worker(
@@ -26,13 +30,13 @@ async def main(args):
                     session,
                     queue,
                     links,
-                    args.maxDepth,
+                    args.max_depth,
                 )
             )
-            for i in range(args.numWorkers)
+            for i in range(args.num_workers)
         ]
 
-        await queue.put(Job(args.url))
+        await queue.put(Job(args.URL))
         await queue.join()
 
         for task in tasks:
