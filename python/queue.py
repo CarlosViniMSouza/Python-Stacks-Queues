@@ -3,8 +3,7 @@ This class merely wraps a collections.deque instance and calls it ._elements.
 The leading underscore in the attribute's name indicates an internal bit of implementation,
 which only the class should access and modify.
 
-Such fields are sometimes called private because they're not supposed to be visible 
-outside the class body.
+Such fields are sometimes called private because they're not supposed to be visible outside the class body.
 """
 
 from itertools import count
